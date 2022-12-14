@@ -1,63 +1,51 @@
 package org.autentia.lab;
 
+import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.ws.rs.core.Response;
 
 @ApplicationScoped
 public class ElementService {
 	
-	@Inject
-	public MapperService mapper;
 	
-	public Response create(ElementDto dto) {		
-		if (alreadyExists(dto)) {
-			return Response.status(201).build();
-		}
-		
-		ElementEntity entity = mapper.toEntity(dto);
-		entity.persist();
-		return Response.ok().build();
-	}
+	public Element get(String symbol) {
+        return Element.findBySymbol(symbol);
+    }
 	
-	public Response update(@Valid ElementDto dto) {
-		ElementEntity entity = ElementEntity.findBySymbol(dto.symbol);
-		if (entity != null) {
-			entity.atomicMass = dto.atomicMass;
-			entity.atomicNumber = dto.atomicNumber;
-			entity.electronConfiguration = dto.electronConfiguration;
-			entity.group = dto.group;
-			entity.period = dto.period;
-			entity.name = dto.name;
-			entity.update();
-			return Response.status(201).build();
-		}
-		return Response.status(400).build();
-	}
-	
-	public Response delete(@Valid ElementDto dto) {
-		ElementEntity entity = ElementEntity.findBySymbol(dto.symbol);
-		if (entity != null) {
-			entity.delete();
-		}
-		return Response.ok().build();
-	}
+	public List<Element> allElements() {
+	    return Element.listAll();
+    }
 
-	private boolean alreadyExists(ElementDto dto) {
-		return (ElementEntity.findBySymbol(dto.symbol) != null);
-	}
+    public Element create(Element element) {
+        Element stored = Element.findBySymbol(element.symbol);
+        if (stored == null) {
+            element.persist();
+            return element;
+        } 
+        return stored;
+    }
 
-	public Response get(String symbol) {
-		ElementEntity entity = ElementEntity.findBySymbol(symbol);
-		if (entity != null) {
-			ElementDto dto = mapper.toDto(entity);
-			return Response.ok().entity(dto).build();
-		}
-		return Response.status(404).build();
-	}
+    public Element update(Element element) {
+        Element stored = Element.findBySymbol(element.symbol);
+        if (stored == null) {
+            element.persist();
+            return element;
+        } 
+        stored.name = element.name;
+        stored.group = element.group;
+        stored.period = element.period;
+        stored.atomicNumber = element.atomicNumber;
+        stored.atomicMass = element.atomicMass;
+        stored.electronConfiguration = element.electronConfiguration;
+        stored.update();
+        return stored;
+    }
 
-	
-
-	
+    public Element delete(String symbol) {
+        Element stored = Element.findBySymbol(symbol);
+        if (stored != null) {
+            stored.delete();
+        }
+        return stored;
+    }
 }

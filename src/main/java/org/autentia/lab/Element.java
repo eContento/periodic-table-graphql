@@ -2,7 +2,7 @@ package org.autentia.lab;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 
-public class ElementEntity extends PanacheMongoEntity {
+public class Element extends PanacheMongoEntity {
 
 	public String symbol;
 	public String name;
@@ -12,7 +12,7 @@ public class ElementEntity extends PanacheMongoEntity {
 	public Double atomicMass;
 	public String electronConfiguration;
 	
-	public static ElementEntity findBySymbol(String symbol) {
+	public static Element findBySymbol(String symbol) {
 		return find("symbol", symbol).firstResult();
 	} 	
 	
